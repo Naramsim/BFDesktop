@@ -1,0 +1,26 @@
+{
+  "name": "bf4-desktop",
+  "version": "0.1.0",
+  "description": "battlefield 4 desktop app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "battlefield",
+    "electron",
+    "desktop",
+    "application",
+    "app"
+  ],
+  "author": "Alessandro Pezzé",
+  "license": "ISC",
+  "devDependencies": {
+    "electron-prebuilt": "^0.34.2"
+  },
+  "dependencies": {
+    "electron-debug": "^0.3.0",
+    "electron-packager": "^5.1.1",
+    "node-ipc": "^3.0.0"
+  }
+}

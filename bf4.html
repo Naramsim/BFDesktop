@@ -1,0 +1,28 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Hi</title>
+	<script type="text/javascript">
+	function httpGetAsync(theUrl, callback)
+		{
+		    var xmlHttp = new XMLHttpRequest();
+		    xmlHttp.onreadystatechange = function() { 
+		        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+		            console.log(xmlHttp)
+		    }
+		    xmlHttp.open("GET", theUrl, true); // true for asynchronous
+		    xmlHttp.send(null);
+		}
+		
+		
+	</script>
+</head>
+<body>
+	<script type="text/javascript">
+	httpGetAsync("http://127.0.0.1:3215/ping", 1)
+		
+	</script>
+	<webview src="https://www.github.com/"></webview>
+</body>
+</html>
