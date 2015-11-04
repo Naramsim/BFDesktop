@@ -1,6 +1,7 @@
 {
   "name": "bf4-desktop",
   "version": "0.1.0",
+  "os" : [ "win32" ],
   "description": "battlefield 4 desktop app",
   "main": "index.js",
   "scripts": {
@@ -16,11 +17,14 @@
   "author": "Alessandro Pezzé",
   "license": "ISC",
   "devDependencies": {
+  	"electron-debug": "^0.3.0",
     "electron-prebuilt": "^0.34.2"
   },
   "dependencies": {
-    "electron-debug": "^0.3.0",
     "electron-packager": "^5.1.1",
     "node-ipc": "^3.0.0"
+  },
+  "scripts": {
+  	"build": "electron-packager . BFDesktop --overwrite --out=dist --ignore='^/node_modules$' --prune --platform=win32 --arch=x64 --icon=media/frost.png --version=0.28.2 && echo Congrats"
   }
 }

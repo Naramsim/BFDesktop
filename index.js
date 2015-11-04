@@ -36,12 +36,11 @@ function createMainWindow() {
 		'min-height': 200,
 		'title-bar-style': 'hidden-inset',
 		'web-preferences': {
+			'javascript': true,
 			// fails without this because of CommonJS script detection
 			'node-integration': false,
-			'preload': path.join(__dirname, 'browser.js'),
-			//'web-security': false,
-			"experimental-features": true ,
-			'plugins': true
+			'preload': path.join(__dirname, 'scripts/browser.js')
+			//'plugins': true
 		}
 	});
 
@@ -52,19 +51,19 @@ function createMainWindow() {
 	return win;
 }
 
-app.on('ready', () => {
+app.on('ready', function() {
 	Menu.setApplicationMenu(appMenu);
 
 	mainWindow = createMainWindow();
 
 	const page = mainWindow.webContents;
 
-	page.on('dom-ready', () => {
-		page.insertCSS(fs.readFileSync(path.join(__dirname, 'browser.css'), 'utf8'));
+	page.on('dom-ready', function() {
+		page.insertCSS(fs.readFileSync(path.join(__dirname, 'stylesheets/browser.css'), 'utf8'));
 		mainWindow.show();
 	});
 
-	page.on('new-window', (e, url) => {
+	page.on('new-window', function(e, url) {
 		e.preventDefault();
 		shell.openExternal(url);
 	});
