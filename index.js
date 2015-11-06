@@ -5,12 +5,27 @@ const app = require('app');
 const BrowserWindow = require('browser-window');
 const shell = require('shell');
 const Menu = require('menu');
+const Tray = require('tray');
+//const ipc = require('ipc');
 const appMenu = require('./menu');
+const appTray = require('./tray')
 
 require('electron-debug')();
 require('crash-reporter').start();
 
 let mainWindow;
+
+var tray = null;
+var initPath = path.join(app.getDataPath(), "init.json");
+var settings;
+global.force_quit = false; //Change it
+
+try {
+	settings = JSON.parse(fs.readFileSync(initPath, 'utf8'));
+}catch(e) {
+	console.log(e);
+	settings = {"version": 4};
+}
 
 function updateBadge(title) {
 	if (!app.dock) {
@@ -43,13 +58,38 @@ function createMainWindow() {
 			//'plugins': true
 		}
 	});
-
-	win.loadUrl('http://battlelog.battlefield.com/bf4');
-	win.on('closed', app.quit);
+	win.loadUrl('http://battlelog.battlefield.com/bf' + settings.version);
+	//win.on('closed', app.quit);
 	//win.on('page-title-updated', (e, title) => updateBadge(title));
+	win.on('close', function(e){
+        if(!force_quit){
+            e.preventDefault();
+            win.hide();
+        }
+    });
+    win.on('before-quit', function (e) {
+        // Handle menu-item or keyboard shortcut quit here
+        if(!force_quit){
+            e.preventDefault();
+            win.hide();
+        }
+    });
+    win.on('activate-with-no-open-windows', function(){
+        win.show();
+    });
+    win.on('will-quit', function () {
+	    // This is a good place to add tests insuring the app is still
+	    // responsive and all windows are closed.
+	    console.log("will-quit");
+	    win = null;
+	});
 
 	return win;
 }
+
+app.on('window-all-closed', function(){
+    app.quit();
+});
 
 app.on('ready', function() {
 	Menu.setApplicationMenu(appMenu);
@@ -57,6 +97,13 @@ app.on('ready', function() {
 	mainWindow = createMainWindow();
 
 	const page = mainWindow.webContents;
+
+	tray = new Tray('media/bf4.png');
+	tray.setToolTip('BFDesktop');
+	tray.setContextMenu(appTray);
+	tray.on('clicked', function() {
+                mainWindow.show();
+            });
 
 	page.on('dom-ready', function() {
 		page.insertCSS(fs.readFileSync(path.join(__dirname, 'stylesheets/browser.css'), 'utf8'));

@@ -1,5 +1,8 @@
 'use strict';
-const ipc = require('ipc');
+const ipc = require('ipc');	
+
+
+
 
 function httpGetAsync(theUrl, callback) {
     var xhr = new XMLHttpRequest();
@@ -44,3 +47,17 @@ ipc.on('goServers', function(){
 ipc.on('logOut', function(){
 	document.querySelector('.tools-item .signout>a').click();
 });
+
+ipc.on('switchBF', function(event, arg){
+	switch(event){ //?? api wrong?
+		case 3:
+			document.location.href = "http://battlelog.battlefield.com/bf3";
+			break;
+		case 4:
+			document.location.href = "http://battlelog.battlefield.com/bf4";
+			break;
+		case 5:
+			document.location.href = "http://battlelog.battlefield.com/bfh";
+			break;
+	}
+})

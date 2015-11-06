@@ -5,17 +5,40 @@ const Menu = require('menu');
 const BrowserWindow = require('browser-window');
 const shell = require('shell');
 const appName = app.getName();
+const path = require("path");
+const fs = require("fs");
+var initPath = path.join(app.getDataPath(), "init.json");
+var settings;
+var BFUsed = [false,false,false];
+try {
+	settings = JSON.parse(fs.readFileSync(initPath, 'utf8'));
+	BFUsed[settings.id] = true;
+	
+}catch(e) {
+}
 
-function sendAction(action) {
+
+
+
+
+function sendAction(action, param) {
 	const win = BrowserWindow.getAllWindows()[0];
 
 	if (process.platform === 'darwin') {
 		win.restore();
 	}
 
-	win.webContents.send(action);
+	win.webContents.send(action, param);
 }
 
+function storeVersion(id, name) {
+	//0->bf3 1->bf4 2->bfh
+	var toSave = {
+		id: id,
+		version: name
+	};
+	fs.writeFileSync(initPath, JSON.stringify(toSave));
+}
 
 const linuxTpl = [
 	{
@@ -54,32 +77,16 @@ const linuxTpl = [
 		]
 	},
 	{
-		label: 'Edit',
+		label: 'BF?',
 		submenu: [
 			{
-				label: 'Cut',
-				accelerator: 'CmdOrCtrl+X',
-				role: 'cut'
+				label: 'BF3', type: 'radio', checked: BFUsed[0], click: function() { sendAction('switchBF', 3); storeVersion(0,3); }
 			},
 			{
-				label: 'Copy',
-				accelerator: 'CmdOrCtrl+C',
-				role: 'copy'
+				label: 'BF4', type: 'radio', checked: BFUsed[1], click: function() { sendAction('switchBF', 4); storeVersion(1,4); }
 			},
 			{
-				label: 'Paste',
-				accelerator: 'CmdOrCtrl+V',
-				role: 'paste'
-			},
-			{
-				type: 'separator'
-			},
-			{
-				label: 'Preferences',
-				accelerator: 'CmdOrCtrl+,',
-				click() {
-					sendAction('show-preferences');
-				}
+				label: 'BFH', type: 'radio', checked: BFUsed[2], click: function() { sendAction('switchBF', 5); storeVersion(2,'h'); }
 			}
 		]
 	},
@@ -113,6 +120,7 @@ ${process.platform} ${process.arch} ${os.release()}`;
 ];
 
 let tpl;
+console.log(linuxTpl[1])
 if (process.platform === 'darwin') {
 	tpl = darwinTpl;
 } else {
