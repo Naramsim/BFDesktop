@@ -8,15 +8,32 @@ const appName = app.getName();
 const path = require("path");
 const fs = require("fs");
 var initPath = path.join(app.getDataPath(), "init.json");
+//var sessionPath = path.join(app.getDataPath(), "session.json");
 var settings;
+//var session;
 var BFUsed = [false,false,false];
 try {
 	settings = JSON.parse(fs.readFileSync(initPath, 'utf8'));
+	//session = JSON.parse(fs.readFileSync(sessionPath, 'utf8'));
 	BFUsed[settings.id] = true;
-	
 }catch(e) {
 }
 
+function autoLogin (check) {
+	if(check) {
+		const win = BrowserWindow.getAllWindows()[0];
+		win.webContents.session.cookies.get({url : "http://battlelog.battlefield.com", name : "beaker.session.id"}, function(error, cookies) {
+			if (error) throw error;
+			console.log(cookies[0].value)
+			var userSessionId = cookies[0].value;
+			win.webContents.session.cookies.set( {url : "http://battlelog.battlefield.com", name : "beaker.session.id", value : userSessionId, session: true, expirationDate: 1478554532},
+				function(error, cookies) {
+				if (error) console.log(error);
+				//console.log(cookies);
+			});
+		});
+	}
+}
 
 
 
@@ -91,8 +108,15 @@ const linuxTpl = [
 		]
 	},
 	{
-		label: 'Help',
-		role: 'help'
+		label: 'Auto-Login',
+		submenu: [
+			{
+				label: 'On', type: 'radio', checked: false, click: function() { autoLogin(true); }
+			},
+			{
+				label: 'Off', type: 'radio', checked: true, click: function() { autoLogin(false); }
+			}
+		]
 	}
 ];
 
@@ -127,6 +151,6 @@ if (process.platform === 'darwin') {
 	tpl = linuxTpl;
 }
 
-tpl[tpl.length - 1].submenu = helpSubmenu;
+//tpl[tpl.length - 1].submenu = helpSubmenu;
 
 module.exports = Menu.buildFromTemplate(tpl);

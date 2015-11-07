@@ -2,6 +2,30 @@
 const ipc = require('ipc');	
 
 
+function createCookie(name,value,days) {
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime()+(days*24*60*60*1000));
+        var expires = "; expires="+date.toGMTString();
+    }
+    else var expires = "";
+    document.cookie = name+"="+value+expires+"; path=/";
+}
+
+function readCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0;i < ca.length;i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+    }
+    return null;
+}
+
+function eraseCookie(name) {
+    createCookie(name,"",-1);
+}
 
 
 function httpGetAsync(theUrl, callback) {
@@ -28,6 +52,16 @@ function startOrigin () {
 
 document.addEventListener('DOMContentLoaded', function() {
 	httpGetAsync("http://127.0.0.1:3215/ping", 1);
+	/*try{
+		const BrowserWindow = require('browser-window');
+		const win = BrowserWindow.getAllWindows()[0];
+		var session = win.webContents.session
+		createCookie("beaker.session.i", "provv",30);
+		console.log("ciao");
+	}catch(e){
+		console.log(e);
+	}*/
+	
 })
 
 ipc.on('goHome', function(){

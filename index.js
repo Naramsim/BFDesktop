@@ -61,6 +61,25 @@ function createMainWindow() {
 	win.loadUrl('http://battlelog.battlefield.com/bf' + settings.version);
 	//win.on('closed', app.quit);
 	//win.on('page-title-updated', (e, title) => updateBadge(title));
+
+	win.webContents.on('did-finish-load', function() {
+		var my_session = {
+			url : "battlelog.battlefield.com",
+			name: "ciao",
+			value: "bello",
+			path: "/",
+			session: true
+		}
+		win.webContents.session.cookies.get({}, function(error, cookies) {
+			if (error) throw error;
+			//console.log(cookies);
+		});
+		/*win.webContents.session.cookies.set( {url : "http://battlelog.battlefield.com", name : "beaker.session.id", value : "edda016b162abb0929f8b7e55ff58b96", session: true, expirationDate: 1478554532},
+		 function(error, cookies) {
+			if (error) console.log(error);
+			//console.log(cookies);
+		});*/
+	});
 	win.on('close', function(e){
         if(!force_quit){
             e.preventDefault();
@@ -104,6 +123,8 @@ app.on('ready', function() {
 	tray.on('clicked', function() {
                 mainWindow.show();
             });
+
+
 
 	page.on('dom-ready', function() {
 		page.insertCSS(fs.readFileSync(path.join(__dirname, 'stylesheets/browser.css'), 'utf8'));
