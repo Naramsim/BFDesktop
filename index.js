@@ -17,14 +17,23 @@ let mainWindow;
 
 var tray = null;
 var initPath = path.join(app.getDataPath(), "init.json");
+var sessionPath = path.join(app.getDataPath(), "session.json");
 var settings;
 global.force_quit = false; //Change it
 
 try {
 	settings = JSON.parse(fs.readFileSync(initPath, 'utf8'));
 }catch(e) {
-	console.log(e);
-	settings = {"version": 4};
+	console.log("Creating init file");
+	settings = {version: 4};
+	fs.writeFileSync(initPath, JSON.stringify( {version: 4, id: 1} ));
+}
+
+try {
+	var session = JSON.parse(fs.readFileSync(sessionPath, 'utf8'));
+}catch(e) {
+	console.log("Creating session file");
+	fs.writeFileSync(sessionPath, JSON.stringify( {autoLogin:false} ));
 }
 
 function updateBadge(title) {
