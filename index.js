@@ -6,7 +6,6 @@ const BrowserWindow = require('browser-window');
 const shell = require('shell');
 const Menu = require('menu');
 const Tray = require('tray');
-//const ipc = require('ipc');
 const appMenu = require('./menu');
 const appTray = require('./tray')
 
@@ -14,17 +13,25 @@ require('electron-debug')();
 require('crash-reporter').start();
 
 let mainWindow;
-
 var tray = null;
 var initPath = path.join(app.getDataPath(), "init.json");
+var sessionPath = path.join(app.getDataPath(), "session.json");
 var settings;
 global.force_quit = false; //Change it
 
 try {
 	settings = JSON.parse(fs.readFileSync(initPath, 'utf8'));
 }catch(e) {
-	console.log(e);
-	settings = {"version": 4};
+	console.log("Creating init file");
+	settings = {version: 4};
+	fs.writeFileSync(initPath, JSON.stringify( {version: 4, id: 1} ));
+}
+
+try {
+	var session = JSON.parse(fs.readFileSync(sessionPath, 'utf8'));
+}catch(e) {
+	console.log("Creating session file");
+	fs.writeFileSync(sessionPath, JSON.stringify( {autoLogin:false} ));
 }
 
 function updateBadge(title) {
@@ -52,43 +59,46 @@ function createMainWindow() {
 		'title-bar-style': 'hidden-inset',
 		'web-preferences': {
 			'javascript': true,
-			// fails without this because of CommonJS script detection
 			'node-integration': false,
 			'preload': path.join(__dirname, 'scripts/browser.js')
 			//'plugins': true
 		}
 	});
 	win.loadUrl('http://battlelog.battlefield.com/bf' + settings.version);
-	//win.on('closed', app.quit);
 	//win.on('page-title-updated', (e, title) => updateBadge(title));
+
 	win.on('close', function(e){
-        if(!force_quit){
-            e.preventDefault();
-            win.hide();
-        }
-    });
-    win.on('before-quit', function (e) {
-        // Handle menu-item or keyboard shortcut quit here
-        if(!force_quit){
-            e.preventDefault();
-            win.hide();
-        }
-    });
-    win.on('activate-with-no-open-windows', function(){
-        win.show();
-    });
-    win.on('will-quit', function () {
-	    // This is a good place to add tests insuring the app is still
-	    // responsive and all windows are closed.
-	    console.log("will-quit");
-	    win = null;
+		if(!force_quit){
+			e.preventDefault();
+			win.hide();
+		}
 	});
+	win.on('before-quit', function (e) {
+		// Handle menu-item or keyboard shortcut quit here
+		if(!force_quit){
+			e.preventDefault();
+			win.hide();
+		}
+	});
+	win.on('activate-with-no-open-windows', function(){
+		win.show();
+	});
+	win.on('will-quit', function () {
+		// This is a good place to add tests insuring the app is still
+		// responsive and all windows are closed.
+		console.log("will-quit");
+		win = null;
+	});
+
+	win.changeTrayIcon = function(version){
+		tray.setImage('media/bf' + version + '.png');
+	}
 
 	return win;
 }
 
 app.on('window-all-closed', function(){
-    app.quit();
+	app.quit();
 });
 
 app.on('ready', function() {
@@ -99,11 +109,12 @@ app.on('ready', function() {
 	const page = mainWindow.webContents;
 
 	tray = new Tray('media/bf4.png');
+	tray.setImage('media/bf' + settings.version + '.png');
 	tray.setToolTip('BFDesktop');
 	tray.setContextMenu(appTray);
 	tray.on('clicked', function() {
-                mainWindow.show();
-            });
+		mainWindow.show();
+	});
 
 	page.on('dom-ready', function() {
 		page.insertCSS(fs.readFileSync(path.join(__dirname, 'stylesheets/browser.css'), 'utf8'));
