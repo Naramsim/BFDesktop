@@ -24,15 +24,18 @@ function sendAction(action) {
 	win.webContents.send(action);
 }
 
+function browseInfo(){
+	shell.openExternal('https://github.com/Naramsim/BF4-Desktop-App');
+}
+
 function quit() {
 	global.force_quit = true;
 	app.quit();
 }
 
 var trayMenu = [
-    { label: 'Running', type: 'normal', sublabel:'BFDesktop', click: function() { quit(); } },
-    { label: 'Item2', type: 'radio' },
-    { label: 'Item3', type: 'radio', checked: true },
+    { label: 'Running', type: 'normal', sublabel:'BFDesktop', click: function() { maximize(); } },
+    { label: 'Info about BFDesktop', click: function () { browseInfo(); }},
     { label: 'Exit', type: 'normal', click: function () { quit(); } }
   ];
 

@@ -7,6 +7,7 @@ const shell = require('shell');
 const appName = app.getName();
 const path = require("path");
 const fs = require("fs");
+const ipc = require('ipc');
 var initPath = path.join(app.getDataPath(), "init.json");
 var sessionPath = path.join(app.getDataPath(), "session.json");
 var settings;
@@ -79,6 +80,7 @@ function sendAction(action, param) {
 
 function storeVersion(id, name) {
 	//0->bf3 1->bf4 2->bfh
+	BrowserWindow.getAllWindows()[0].changeTrayIcon(name);
 	var toSave = {
 		id: id,
 		version: name
@@ -132,7 +134,7 @@ const linuxTpl = [
 				label: 'BF4', type: 'radio', checked: BFUsed[1], click: function() { sendAction('switchBF', 4); storeVersion(1,4); }
 			},
 			{
-				label: 'BFH', type: 'radio', checked: BFUsed[2], click: function() { sendAction('switchBF', 5); storeVersion(2,'h'); }
+				label: 'BFH', type: 'radio', checked: BFUsed[2], click: function() { sendAction('switchBF', "h"); storeVersion(2,'h'); }
 			}
 		]
 	},
