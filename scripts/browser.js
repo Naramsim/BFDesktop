@@ -57,3 +57,4 @@ ipc.on('logOut', function(){
 ipc.on('switchBF', function(version){
 	document.location.href = battleLogUrl + version;
 });
+
