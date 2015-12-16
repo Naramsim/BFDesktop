@@ -9,7 +9,10 @@ const Tray = require('tray');
 const appMenu = require('./menu');
 const appTray = require('./tray')
 
-require('electron-debug')();
+try{
+	require('electron-debug')();
+}catch(e){}
+
 require('crash-reporter').start();
 
 let mainWindow;
@@ -91,7 +94,8 @@ function createMainWindow() {
 	});
 
 	win.changeTrayIcon = function(version){
-		tray.setImage('media/bf' + version + '.png');
+		var trayImage =  __dirname + '\\media\\bf' + version + '.ico';
+		tray.setImage( trayImage);
 	}
 
 	return win;
@@ -105,11 +109,11 @@ app.on('ready', function() {
 	Menu.setApplicationMenu(appMenu);
 
 	mainWindow = createMainWindow();
-
+	mainWindow.show();
 	const page = mainWindow.webContents;
-
-	tray = new Tray('media/bf4.png');
-	tray.setImage('media/bf' + settings.version + '.png');
+	var trayImage =  __dirname + '\\media\\bf' + settings.version + '.ico';
+	tray = new Tray(trayImage);
+	tray.setImage(trayImage);
 	tray.setToolTip('BFDesktop');
 	tray.setContextMenu(appTray);
 	tray.on('clicked', function() {
@@ -118,7 +122,11 @@ app.on('ready', function() {
 
 	page.on('dom-ready', function() {
 		page.insertCSS(fs.readFileSync(path.join(__dirname, 'stylesheets/browser.css'), 'utf8'));
-		mainWindow.show();
+		setTimeout(function() {
+			console.log(page.getUrl());
+			//session.autoLogin = false;
+			//TODO: set load page to /gate
+		}, 2000);
 	});
 
 	page.on('new-window', function(e, url) {

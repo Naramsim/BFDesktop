@@ -36,10 +36,10 @@ document.addEventListener('DOMContentLoaded', function() {
 	httpGetAsync(originPing, 1);
 })
 
-ipc.on('goHome', function(){
+ipc.on('goHome', function(bfVersion){
 	// create the menu for the below
-	console.log("e")
-	document.location.href = "http://battlelog.battlefield.com/bf4";
+	console.log(bfVersion)
+	document.location.href = "http://battlelog.battlefield.com/bf" + bfVersion;
 });
 
 ipc.on('goProfile', function(){

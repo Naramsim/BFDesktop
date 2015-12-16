@@ -25,6 +25,6 @@
     "node-ipc": "^3.0.0"
   },
   "scripts": {
-  	"build": "electron-packager . BFDesktop --overwrite --out=dist --ignore='dist' --prune --platform=win32 --arch=x64 --icon=media/frost.png --version=0.34.2 && echo Congrats"
+  	"build": "electron-packager . BFDesktop --overwrite --out=dist --ignore='dist/' --asar=true --platform=win32 --arch=x64 --icon=media/frost.ico --version=0.34.2 --version-string.CompanyName=BFDesktop --version-string.ProductName=BFDesktop --version-string.FileDescription=BF-Battlelog --version-string.LegalCopyright=´None --version-string.ProductVersion=1.0 --version-string.FileVersion=1.0 --version-string.InternalName=BFDesktop --version-string.OriginalFilename=BFDesktop && echo Congrats"
   }
 }

@@ -85,6 +85,7 @@ function storeVersion(id, name) {
 		id: id,
 		version: name
 	};
+	settings.version = name;
 	fs.writeFileSync(initPath, JSON.stringify(toSave));
 }
 
@@ -96,7 +97,8 @@ const linuxTpl = [
 				label: 'Home',
 				accelerator: 'CmdOrCtrl+H',
 				click() {
-					sendAction('goHome');
+					console.log(settings.version)
+					sendAction('goHome', settings.version);
 				}
 			},
 			{
