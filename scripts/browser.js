@@ -1,5 +1,5 @@
 'use strict';
-const ipc = require('ipc');	
+const ipc = require("electron").ipcRenderer;
 var idOriginIndicator = "#gamemanager-indicator";
 var originLibPath = "origin2://library/open";
 var originPing = "http://127.0.0.1:3215/ping";
@@ -36,25 +36,26 @@ document.addEventListener('DOMContentLoaded', function() {
 	httpGetAsync(originPing, 1);
 })
 
-ipc.on('goHome', function(bfVersion){
+ipc.on('goHome', function(event, bfVersion){
 	// create the menu for the below
 	console.log(bfVersion)
 	document.location.href = "http://battlelog.battlefield.com/bf" + bfVersion;
 });
 
 ipc.on('goProfile', function(){
+	console.log("P")
 	document.querySelector('.tools-item .profile>a').click();
 });
 
-ipc.on('goServers', function(){
-	document.location.href = "http://battlelog.battlefield.com/bf4/servers/";
+ipc.on('goServers', function(event, bfVersion){
+	document.location.href = "http://battlelog.battlefield.com/bf" + bfVersion + "/servers/";
 });
 
 ipc.on('logOut', function(){
 	document.querySelector('.tools-item .signout>a').click();
 });
 
-ipc.on('switchBF', function(version){
+ipc.on('switchBF', function(event, version){
 	document.location.href = battleLogUrl + version;
 });
 

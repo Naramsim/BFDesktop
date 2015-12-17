@@ -7,9 +7,9 @@ const shell = require('shell');
 const appName = app.getName();
 const path = require("path");
 const fs = require("fs");
-const ipc = require('ipc');
-var initPath = path.join(app.getDataPath(), "init.json");
-var sessionPath = path.join(app.getDataPath(), "session.json");
+const ipc = require("electron").ipcMain
+var initPath = path.join(app.getPath("userData"), "init.json");
+var sessionPath = path.join(app.getPath("userData"), "session.json");
 var settings;
 var session = {};
 var BFUsed = [false,false,false];
@@ -71,11 +71,15 @@ function autoLogin (check) {
 
 
 function sendAction(action, param) {
-	const win = BrowserWindow.getAllWindows()[0];
-	if (process.platform === 'darwin') {
-		win.restore();
+	try{
+		const win = BrowserWindow.getAllWindows()[0];
+		if (process.platform === 'darwin') {
+			win.restore();
+		}
+		win.webContents.send(action, param);
+	}catch(e) {
+		console.log(e);
 	}
-	win.webContents.send(action, param);
 }
 
 function storeVersion(id, name) {
@@ -112,7 +116,7 @@ const linuxTpl = [
 				label: 'Servers',
 				accelerator: 'CmdOrCtrl+S',
 				click() {
-					sendAction('goServers');
+					sendAction('goServers', settings.version);
 				}
 			},
 			{
